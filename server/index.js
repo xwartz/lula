@@ -1,38 +1,62 @@
-'use strict'
+const path = require('path')
+const koa = require('koa')
+const logger = require('koa-logger')
+const proxy = require('koa-proxy')
+const serve = require('koa-static')
+const router = require('./routes')
+const utils = require('./utils')
 
-import express from 'express'
-import path from 'path'
-import logger from 'morgan'
-import cookieParser from 'cookie-parser'
-import bodyParser from 'body-parser'
-import hbs from 'hbs'
+const globalConfig = require('../config')
 
-// import config from './config/index'
-import router from './router/index'
-// import middleware from './middleware/index'
+const env = process.env.NODE_ENV || 'development'
+const isDev = env === 'development'
 
-let app = express()
+const staticDir = path.resolve(__dirname, '../' + (isDev ? 'client' : 'static'))
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'))
-app.set('view engine', 'hbs')
+const app = koa()
 
-// 模板引用 app.locals
-hbs.localsAsTemplateData(app)
-// app.set('protocol', config.protocol)
+if (isDev) {
+  // 开发环境
+  app.use(logger())
+  // 前端的静态资源请求，走 webpack server
+  app.use(proxy({
+    host: `http://127.0.0.1:${globalConfig.client.port}`,
+    match: /^\/static\//
+  }))
+}
 
-app.use(logger('dev'))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({
-  extended: false
-}))
-app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
+// global events listen
+app.on('error', (err, ctx) => {
+  err.url = err.url || ctx.request.url
+  console.error(err.stack, ctx)
+})
 
-// init moddleware
-// middleware(app)
+// handle favicon.ico
+app.use(function*(next) {
+  if (this.url.match(/favicon\.ico$/)) {
+    this.body = ''
+  }
+  yield next
+})
 
-// init router
-router(app)
+// 所有非 API 接口输出使用统一模板，让客户端去渲染
+router.get('/(.*)', function *(next) {
+  if (!~this.url.indexOf('/api')) {
+    this.body = yield utils.readFileThunk(staticDir + '/index.html')
+  }
+  yield next
+})
 
-export default app
+// 静态文件
+app.use(serve(staticDir))
+
+// 设置路由
+app.use(router.routes())
+   .use(router.allowedMethods())
+
+// 设置端口号
+const port = globalConfig.server.port
+
+app.listen(port)
+
+console.log(`Node app is listening on port ${port}...`)

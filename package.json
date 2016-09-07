@@ -1,12 +1,8 @@
 {
-  "name": "lula",
-  "version": "1.0.0",
+  "name": "Lula",
+  "version": "0.0.1",
   "description": "前端接口请求的 mock 服务",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "node -r babel-register index.js"
-  },
+  "main": "server/index.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/xwartz/lula.git"
@@ -23,38 +19,68 @@
     "url": "https://github.com/xwartz/lula/issues"
   },
   "homepage": "https://github.com/xwartz/lula#readme",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint client/**/*.js server/**/*.js",
+    "hot-server": "node -r babel-register hot-server.js",
+    "server": "node -r babel-register server/index.js",
+    "build-render": "NODE_ENV=production node -r babel-register ./node_modules/.bin/webpack --config webpack.config.pro.js --progress --profile --colors",
+    "build-server": "NODE_ENV=production node -r babel-register server/index.js",
+    "log": "pm2 logs",
+    "start": "pm2 start pm2.config.dev.json && npm run log",
+    "stop": "pm2 stop pm2.config.dev.json && pm2 delete pm2.config.dev.json",
+    "restart": "npm run stop && npm run start",
+    "deploy:start": "pm2 start pm2.config.pro.json && npm run log",
+    "deploy:stop": "pm2 stop pm2.config.pro.json && pm2 delete pm2.config.pro.json",
+    "deploy:restart": "npm run deploy:stop && npm run deploy:start"
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "dependencies": {
+    "humps": "^1.1.0",
+    "isomorphic-fetch": "^2.2.1",
+    "koa": "^1.2.1",
+    "koa-logger": "^1.3.0",
+    "koa-proxy": "^0.6.0",
+    "koa-router": "^5.4.0",
+    "koa-static": "^2.0.0",
+    "lodash": "^4.15.0",
+    "normalizr": "^2.2.1",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.7.0",
+    "react-router-redux": "^4.0.5",
+    "redux": "^3.5.2",
+    "redux-actions": "^0.11.0",
+    "redux-thunk": "^2.1.0"
+  },
   "devDependencies": {
+    "autoprefixer": "^6.4.0",
     "babel": "^6.5.2",
     "babel-loader": "^6.2.5",
-    "babel-preset-es2015": "^6.13.2",
+    "babel-plugin-transform-runtime": "^6.12.0",
+    "babel-preset-es2015": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-0": "^6.5.0",
-    "babel-register": "^6.11.6",
-    "css-loader": "^0.23.1",
-    "eslint": "^3.3.0",
-    "eslint-config-standard": "^5.3.5",
+    "css-loader": "^0.24.0",
+    "eslint": "^3.3.1",
+    "eslint-config-standard": "^6.0.0",
     "eslint-plugin-promise": "^2.0.1",
     "eslint-plugin-react": "^6.1.2",
     "eslint-plugin-standard": "^2.0.0",
-    "node-sass": "^3.8.0",
+    "file-loader": "^0.9.0",
+    "json-loader": "^0.5.4",
+    "pm2": "^1.1.3",
+    "postcss-loader": "^0.10.1",
+    "pre-commit": "^1.1.3",
+    "precss": "^1.4.0",
     "react-hot-loader": "^1.3.0",
     "redux-logger": "^2.6.1",
-    "sass-loader": "^4.0.0",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
-    "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
-  },
-  "dependencies": {
-    "body-parser": "^1.15.2",
-    "cookie-parser": "^1.4.3",
-    "express": "^4.14.0",
-    "hbs": "^4.0.0",
-    "morgan": "^1.7.0",
-    "react": "^15.3.0",
-    "react-dom": "^15.3.0",
-    "react-redux": "^4.4.5",
-    "redux": "^3.5.2",
-    "redux-thunk": "^2.1.0"
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.15.0"
   }
 }

@@ -1,0 +1,31 @@
+{
+  "apps": [{
+    "name": "hot-server",
+    "script": "npm",
+    "args": ["run", "hot-server"],
+    "watch": ["./hot-server.js", "./webpack.config.dev.js"],
+    "node_args": "",
+    "merge_logs": true,
+    "log_file": "logs/client-dev.log",
+    "error_file": "logs/client-dev-err.log",
+    "out_file": "logs/client-dev-out.log",
+    "pid_file": "logs/client-dev.pid",
+    "env": {
+      "NODE_ENV": "development"
+    }
+  }, {
+    "name": "server",
+    "script": "npm",
+    "args": ["run", "server"],
+    "watch": ["./server"],
+    "node_args": "",
+    "merge_logs": true,
+    "log_file": "logs/server-dev.log",
+    "error_file": "logs/server-dev-err.log",
+    "out_file": "logs/server-dev-out.log",
+    "pid_file": "logs/server-dev.pid",
+    "env": {
+      "NODE_ENV": "development"
+    }
+  }]
+}

@@ -1,0 +1,17 @@
+{
+  "apps": [{
+    "name": "deploy-server",
+    "script": "npm",
+    "args": ["run", "build-server"],
+    "watch": false,
+    "node_args": "",
+    "merge_logs": true,
+    "log_file": "logs/server-pro.log",
+    "error_file": "logs/server-pro-err.log",
+    "out_file": "logs/server-pro-out.log",
+    "pid_file": "logs/server-pro.pid",
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }]
+}
